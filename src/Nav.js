@@ -25,6 +25,9 @@ export default class Nav extends React.Component{
                             <Link to = "/Login">
                                 <a className="nav-item nav-link text-white">Log In</a>  
                             </Link>
+                            <Link to = "/ScrollAPI">
+                                <a className="nav-item nav-link text-white">Test Scroll Api</a>  
+                            </Link>
                                               
                         </div>                        
                     </div>                 

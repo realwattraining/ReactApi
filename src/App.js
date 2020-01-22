@@ -6,7 +6,9 @@ import Home from "./Home";
 import Nav from "./Nav";
 import './App.css';
 import { reactDom } from "react-dom";
+import ScrollTest from "./ScrollTest";
 import Api from "./Api";
+
 import {BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 
@@ -18,7 +20,8 @@ function App() {
           <Route path="/Home" component={Home}></Route>
           <Route path="/Api" component = {Api}></Route>
           <Route path="/Register" component = {Register}></Route>
-        <Route path="/Login" component={Login}></Route>
+          <Route path="/Login" component={Login}></Route>
+           <Route path="/ScrollAPI" component={ScrollTest}></Route>
        </Switch>
       </Router>
 

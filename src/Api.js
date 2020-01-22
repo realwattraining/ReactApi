@@ -7,37 +7,95 @@ export default class Api extends React.Component {
     super(props);
     this.state = {
       itemss: [],
+      TempItem : [] ,
       id : [],
       isLoaded: false ,
-      search : "java",
+      strSearch : "",
+      timeout : 0,
+      searchText : "react",
+      scrolled : false,
+      pagePre : 2,
+      pageNext : 51,
+      hight : 0,
     }
-      this.handleChange = this.handleChange.bind(this);
+     //this.handleChange = this.handleChange.bind(this);
+
      
   }
+  scrooler =() =>{
+      if(this.state.isLoaded==true){
+            //this.setState({  TempItem : this.state.items, pagePre :this.state.pagePre +50, pageNext :this.state.pageNext +50});
+             setTimeout (this.api(this.state.searchText , 50 , 50), 600);
+        }else{
+            this.setState({ scrolled : false });
+        }
+ 
+        
+  }
 
-    componentDidMount() {
-       // https://api.github.com/search/repositories?q=php'
-        fetch('https://api.github.com/search/repositories?q='+this.state.shearch)
+    componentDidMount(){  
+        let isTop;
+        this.api(this.state.searchText , this.state.pagePre , this.state.pageNext);
+        window.addEventListener("scroll",()=>{
+                  isTop = window.scrollY > 4000 ;
+                  console.log(isTop);
+                  console.log(window.scrollY); 
+                  if(isTop==true){
+                    this.setState({isLoaded : true});
+                      this.api(this.state.searchText , this.state.pagePre , this.state.pageNext);
+                  }  
+                //   if(this.state. isLoaded)  setTimeout(this.api(this.state.searchText , 100 , 150), 600);   
+                  }); 
+
+  
+    }
+
+    
+    componentWillMount() {    
+       //window.removeEventListener("scroll");
+    }
+    
+    // Create Function Get Data From api
+    api =(searchvalue , pre , next) =>{   
+        console.log(this.state.pagePre +"Nexxt ::" +this.state.pageNext);
+        fetch('https://api.github.com/search/repositories?q='+searchvalue+"?page="+pre+"&per_page="+next)
         .then(res => res.json())
         .then((data) => {
-          this.setState({ itemss:data.items  , isLoaded : true})
-
-          //console.log('item', this.state.itemss);
-        })
-        .catch(console.log)
+          this.setState({ itemss:data.items  , isLoaded : true})}).catch(console.log)       
     }
-    handleChange = (e) =>{
-        this.setState({search : e.target.search })
+   // function Event on change
+    updateInputValue(evt){
+        var searchText= evt.target.value;
+        this.setState({strSearch: searchText});    
+    try {
+        if (searchText == "" || searchText==null || searchText==undefined){
+            this.setState({
+                itemss: [],
+                searchText :"react"
+            })
+            return;
+        }
+        else{
+            console.log("else",searchText);
+            if(this.timeout) clearTimeout(this.timeout);
+            this.timeout = setTimeout( this.api(searchText , this.state.pagePre , this.state.pageNext), 600); 
+        }
+    } catch (error) {
+       console.log(error); 
     }
+  }
 
-    render() {
-        const {isLoaded , itemss ,id , search} = this.state;
+    
+
+    render() {        
+        var {isLoaded , itemss ,id , strSearch ,temp} = this.state;
         if (!isLoaded) {
            return <div className="App">
                 <img className="loading" src="../dist/img/loading.gif"/>
            </div>
        } else{
         return (
+           
             <div className = "container">
                 <div className="row justify-content-center">
                      <div className="col-xl-12 col-md-12 col-sm-6 mt-1">
@@ -47,14 +105,14 @@ export default class Api extends React.Component {
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <form class="form-inline my-2 my-lg-0 float-right">
-                                <input class="form-control mr-sm-2 w-100" type="search" placeholder="Search langaue" value={this.state.search} onChange={this.handleChange} aria-label="Search"></input>
-                                {/* <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> */}
+                                <input class="form-control mr-sm-2 w-100" placeholder="search" value={strSearch} onChange={evt => this.updateInputValue(evt)}></input>
+                                {/* <button class="btn btn-outline-success my-2 my-sm-0" onClick={this.clickSearch} type="submit">Search</button> */}
                             </form>
                         </nav>                      
                     </div>
 
                       <div className="col-xl-12 col-md-12 col-sm-6 float-left">                      
-                         <div className="row">
+                         <div className="row">                         
                             {
                                this.state.itemss.map(item =>(
                            //Box show Item
